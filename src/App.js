@@ -1,91 +1,101 @@
+import { useState } from "react";
 import "./App.css";
 import "../node_modules/@fortawesome/fontawesome-free/css/all.css";
+import Mensajero from "./Mensajero";
+import Mensajes from "./Mensajes";
 
 function App() {
+  const [mensajeros, setMensajeros] = useState([
+    {
+      titulo: "izquierda",
+      inputValue: "",
+      mensajes_enviados: [{ texto: "hola" }, { texto: "que tal" }],
+    },
+    {
+      titulo: "asdawdwad",
+      inputValue: "",
+      mensajes_enviados: [{ texto: "como estan" }, { texto: "bienvenidos" }],
+    },
+    {
+      titulo: "dasdadwdwazxczxc",
+      inputValue: "",
+      mensajes_enviados: [{ texto: "buen dia" }, { texto: "como andan" }],
+    },
+  ]);
+
+  const writeMessage = (i) => {
+    return (e) => {
+      const copiaDeMensajeros = [...mensajeros];
+      copiaDeMensajeros[i].inputValue = e.target.value;
+      setMensajeros(copiaDeMensajeros);
+    };
+  };
+
+  const addMessage = (i) => {
+    return (e) => {
+      const copiaDeMensajeros = [...mensajeros];
+
+      // Agregar un mensaje
+      copiaDeMensajeros[i].mensajes_enviados.push({
+        texto: copiaDeMensajeros[i].inputValue,
+        leido: false,
+      });
+
+      // Limpiar el input
+      copiaDeMensajeros[i].inputValue = "";
+
+      setMensajeros(copiaDeMensajeros);
+    };
+  };
+
+  const removeMessage = (i) => {
+    return (index) => {
+      return () => {
+        const copiaDeMensajeros = [...mensajeros];
+
+        // Quitar un mensaje
+        copiaDeMensajeros[i].mensajes_enviados.splice(index, 1);
+
+        setMensajeros(copiaDeMensajeros);
+      };
+    };
+  };
+
+  const readMessage = (i) => {
+    return (index) => {
+      return () => {
+        const copiaDeMensajeros = [...mensajeros];
+
+        // Leer un mensaje
+        copiaDeMensajeros[i].mensajes_enviados[index].leido = true;
+
+        setMensajeros(copiaDeMensajeros);
+      };
+    };
+  };
+
   return (
     <div className="app">
-      <header className="app__header">
-        <h1 className="app__title">Mensajes recibidos</h1>
-        <ul className="messages">
-          <li className="messages__message messages__message--readed">hola</li>
-          <li className="messages__message messages__message--readed">
-            que tal
-          </li>
-          <li className="messages__message">como estan</li>
-          <li className="messages__message messages__message--readed">
-            bienvenidos
-          </li>
-          <li className="messages__message">buen dia</li>
-          <li className="messages__message">como andan</li>
-        </ul>
-      </header>
+      <Mensajes
+        titulo="Mensajes recibidos"
+        mensajes_enviados={[
+          ...mensajeros[0].mensajes_enviados,
+          ...mensajeros[1].mensajes_enviados,
+          ...mensajeros[2].mensajes_enviados,
+        ]}
+      />
       <ul className="app__messengers">
-        <li className="messenger">
-          <h2 className="messenger__name">izquierda</h2>
-          <div className="messenger__inputs">
-            <input className="messenger__text" type="text" />
-            <input type="submit" className="messenger__send" />
-          </div>
-          <div className="messenger__messages">
-            <h3 className="messenger__title">Mensajes enviados:</h3>
-            <ul className="messenger__list">
-              <li className="messenger__message">
-                <p className="messenger__text">hola</p>
-                <i className="messenger__icon fas fa-bomb"></i>
-                <i className="messenger__icon far fa-eye"></i>
-              </li>
-              <li className="messenger__message">
-                <p className="messenger__text">que tal</p>
-                <i className="messenger__icon fas fa-bomb"></i>
-                <i className="messenger__icon far fa-eye"></i>
-              </li>
-            </ul>
-          </div>
-        </li>
-        <li className="messenger">
-          <h2 className="messenger__name">centro</h2>
-          <div className="messenger__inputs">
-            <input className="messenger__text" type="text" />
-            <input type="submit" className="messenger__send" />
-          </div>
-          <div className="messenger__messages">
-            <h3 className="messenger__title">Mensajes enviados:</h3>
-            <ul className="messenger__list">
-              <li className="messenger__message">
-                <p className="messenger__text">como estan</p>
-                <i className="messenger__icon fas fa-bomb"></i>
-                <i className="messenger__icon far fa-eye"></i>
-              </li>
-              <li className="messenger__message">
-                <p className="messenger__text">bienvenidos</p>
-                <i className="messenger__icon fas fa-bomb"></i>
-                <i className="messenger__icon far fa-eye"></i>
-              </li>
-            </ul>
-          </div>
-        </li>
-        <li className="messenger">
-          <h2 className="messenger__name">derecha</h2>
-          <div className="messenger__inputs">
-            <input className="messenger__text" type="text" />
-            <input type="submit" className="messenger__send" />
-          </div>
-          <div className="messenger__messages">
-            <h3 className="messenger__title">Mensajes enviados:</h3>
-            <ul className="messenger__list">
-              <li className="messenger__message">
-                <p className="messenger__text">buen dia</p>
-                <i className="messenger__icon fas fa-bomb"></i>
-                <i className="messenger__icon far fa-eye"></i>
-              </li>
-              <li className="messenger__message">
-                <p className="messenger__text">como andan</p>
-                <i className="messenger__icon fas fa-bomb"></i>
-                <i className="messenger__icon far fa-eye"></i>
-              </li>
-            </ul>
-          </div>
-        </li>
+        {mensajeros.map((mensajero, i) => (
+          <Mensajero
+            titulo={mensajero.titulo}
+            inputValue={mensajero.inputValue}
+            mensajes_enviados={mensajero.mensajes_enviados}
+            writeMessage={writeMessage(i)}
+            addMessage={addMessage(i)}
+            removeMessage={removeMessage(i)}
+            readMessage={readMessage(i)}
+          />
+        ))}
       </ul>
     </div>
   );
